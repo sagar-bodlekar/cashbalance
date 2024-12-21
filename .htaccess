@@ -1,0 +1,13 @@
+# Custom 404 Error Page
+ErrorDocument 404 /cashbalance/404.php
+
+# Prevent directory listing
+Options -Indexes
+
+# Handle other errors
+ErrorDocument 500 /cashbalance/404.php
+ErrorDocument 403 /cashbalance/404.php
+
+php_flag display_errors off
+php_value error_reporting E_ALL
+php_value error_log /path/to/error.log
