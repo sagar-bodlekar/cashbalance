@@ -43,7 +43,7 @@ if(isset($_POST['submit_received']) || isset($_POST['submit_expense'])) {
                 $worksheet = $spreadsheet->createSheet();
                 $worksheet->setTitle($date);
                 
-                // हेडर जोड़ें
+                // join header
                 $worksheet->setCellValue('A1', 'दिनांक');
                 $worksheet->setCellValue('B1', 'विवरण');
                 $worksheet->setCellValue('C1', 'प्रापंभिक शेष');
