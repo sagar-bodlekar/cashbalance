@@ -23,7 +23,7 @@ if(isset($_POST['submit_received']) || isset($_POST['submit_expense'])) {
         
         $is_received = isset($_POST['submit_received']);
         
-        // सुनिश्चित करें कि data फ़ोल्डर मौजूद है
+        // check if data folder and
         if (!file_exists('../data')) {
             mkdir('../data', 0777, true);
         }
@@ -31,15 +31,15 @@ if(isset($_POST['submit_received']) || isset($_POST['submit_expense'])) {
         $file_path = '../data/transactions.xlsx';
         
         if(file_exists($file_path)) {
-            // यदि फ़ाइल मौजूद है
+            // check file exists or not
             $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
             $spreadsheet = $reader->load($file_path);
             
-            // चेक करें कि क्या आज की तारीख की शीट मौजूद है
+            // check date wise sheet
             if($spreadsheet->sheetNameExists($date)) {
                 $worksheet = $spreadsheet->getSheetByName($date);
             } else {
-                // नई शीट बनाएं आज की तारीख के साथ
+                // create new sheet with current date
                 $worksheet = $spreadsheet->createSheet();
                 $worksheet->setTitle($date);
                 
@@ -52,12 +52,12 @@ if(isset($_POST['submit_received']) || isset($_POST['submit_expense'])) {
                 $worksheet->setCellValue('F1', 'शेष');
             }
         } else {
-            // नई फ़ाइल बनाएं
+            // create new file
             $spreadsheet = new Spreadsheet();
             $worksheet = $spreadsheet->getActiveSheet();
             $worksheet->setTitle($date);
             
-            // हेडर जोड़ें
+            // join header
             $worksheet->setCellValue('A1', 'दिनांक');
             $worksheet->setCellValue('B1', 'विवरण');
             $worksheet->setCellValue('C1', 'प्रापंभिक शेष');
@@ -66,12 +66,12 @@ if(isset($_POST['submit_received']) || isset($_POST['submit_expense'])) {
             $worksheet->setCellValue('F1', 'शेष');
         }
         
-        // अंतिम पंक्ति प्राप्त करें वर्तमान शीट से
+        // last entry comes from last sheet
         $worksheet = $spreadsheet->getSheetByName($date);
         $lastRow = $worksheet->getHighestRow();
         $newRow = $lastRow + 1;
         
-        // नई एंट्री जोड़ें
+        // new entry
         $worksheet->setCellValue('A' . $newRow, $date);
         $worksheet->setCellValue('B' . $newRow, $description);
         $worksheet->setCellValue('C' . $newRow, $opening_balance);
@@ -88,7 +88,7 @@ if(isset($_POST['submit_received']) || isset($_POST['submit_expense'])) {
         
         $worksheet->setCellValue('F' . $newRow, $final_balance);
         
-        // फ़ाइल सहेजने से पहले permissions की जाँच करें
+        // check permission before entry
         if (file_exists($file_path)) {
             if (!is_writable($file_path)) {
                 throw new Exception('फ़ाइल में लिखने की अनुमति नहीं है');

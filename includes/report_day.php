@@ -5,18 +5,18 @@ require 'error_handler.php';
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
-// पेजिनेशन सेटिंग्स
+// pagination settings
 $records_per_page = 10;
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
 $start_from = ($page - 1) * $records_per_page;
 
 
-// एक्सेल फाइल चेक करें
+// check excel file
 if (!file_exists('../data/transactions.xlsx')) {
     CustomError::show404();
 }
 
-// एक्सेल फाइल से डेटा पढ़ें
+// read excel file
 $reader = new Xlsx();
 $spreadsheet = $reader->load('../data/transactions.xlsx');
 $all_data = [];
@@ -27,12 +27,12 @@ try {
     $reader = new Xlsx();
     $spreadsheet = $reader->load('../data/transactions.xlsx');
 
-    // अगर कोई डेटा नहीं है
+    // check if data exists
     if ($spreadsheet->getActiveSheet()->getHighestRow() <= 1) {
         CustomError::show404();
     }
 
-    // सभी शीट्स से डेटा एकत्र करें
+    // collect all data from all sheets
     foreach ($spreadsheet->getWorksheetIterator() as $worksheet) {
         $date = $worksheet->getTitle();
         $transactions = [];
@@ -57,10 +57,10 @@ try {
     CustomError::show404();
 }
 
-// डेटा को तारीख के हिसाब से क्रमबद्ध करें (नवीनतम पहले)
+// arrage date wise
 krsort($all_data);
 
-// सर्च फंक्शनैलिटी को बेहतर बनाएं
+// search funtion
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 if ($search) {
     $filtered_data = [];
@@ -69,18 +69,18 @@ if ($search) {
         $description_match = false;
         $amount_match = false;
 
-        // तारीख में सर्च
+        // date wise search
         if (stripos(date('d-m-Y', strtotime($date)), $search) !== false) {
             $date_match = true;
         }
 
         foreach ($transactions as $transaction) {
-            // विवरण में सर्च
+            // description wise search
             if (stripos($transaction['description'], $search) !== false) {
                 $description_match = true;
             }
 
-            // राशि में सर्च (प्राप्त, खर्च या शेष)
+            // amount wise search
             $amount_search = str_replace(['rs', 'rs.', '₹', ',', ' '], '', strtolower($search));
             if (is_numeric($amount_search)) {
                 if (
@@ -93,7 +93,7 @@ if ($search) {
             }
         }
 
-        // अगर कोई भी मैच मिला तो डेटा रखें
+        // if data not found than this
         if ($date_match || $description_match || $amount_match) {
             $filtered_data[$date] = $transactions;
         }
@@ -101,17 +101,17 @@ if ($search) {
     $all_data = $filtered_data;
 }
 
-// फ़िल्टर और सॉर्टिंग पैरामीटर्स
+// filter and shorting format
 $filter_date_from = isset($_GET['date_from']) ? $_GET['date_from'] : '';
 $filter_date_to = isset($_GET['date_to']) ? $_GET['date_to'] : '';
 $filter_type = isset($_GET['type']) ? $_GET['type'] : ''; // received/expense
 $sort_by = isset($_GET['sort']) ? $_GET['sort'] : 'date_desc'; // date_asc, date_desc, amount_asc, amount_desc
 
-// फ़िल्टर लॉजिक
+// filter logic
 if (!empty($filter_date_from) || !empty($filter_date_to) || !empty($filter_type)) {
     $filtered_data = [];
     foreach ($all_data as $date => $transactions) {
-        // डेट रेंज फ़िल्टर
+        // date range filter
         if (!empty($filter_date_from) && strtotime($date) < strtotime($filter_date_from)) {
             continue;
         }
@@ -119,7 +119,7 @@ if (!empty($filter_date_from) || !empty($filter_date_to) || !empty($filter_type)
             continue;
         }
 
-        // ट्रांजैक्शन टाइप फ़िल्टर
+        // transaction type filter
         if (!empty($filter_type)) {
             $keep_transactions = [];
             foreach ($transactions as $transaction) {
@@ -139,7 +139,7 @@ if (!empty($filter_date_from) || !empty($filter_date_to) || !empty($filter_type)
     $all_data = $filtered_data;
 }
 
-// सॉर्टिंग लॉजिक
+// shorting logic
 switch ($sort_by) {
     case 'date_asc':
         ksort($all_data);
@@ -197,7 +197,7 @@ ini_set('display_errors', 1);
             color: #fff;
         }
 
-        /* मोबाइल व्यू के लिए रेस्पोंसिव डिज़ाइन */
+        /* reponsive for mobile view */
         @media (max-width: 576px) {
             .d-flex {
                 flex-direction: column;
@@ -240,7 +240,7 @@ ini_set('display_errors', 1);
     <div class="container mt-5">
         <h2 class="mb-4">दैनिक लेनदेन रिपोर्ट</h2>
 
-        <!-- सर्च बॉक्स -->
+        <!-- search box -->
         <div class="search-box">
             <form method="GET" class="row g-3">
                 <div class="col-md-4">
@@ -261,7 +261,7 @@ ini_set('display_errors', 1);
             </form>
         </div>
 
-        <!-- ड़िल्टर और एक्सपोर्ट UI -->
+        <!-- delter and export ui -->
         <div class="filter-export-box mb-4">
             <form method="GET" class="row g-3 align-items-end">
                 <div class="col-md-2">
@@ -316,7 +316,7 @@ ini_set('display_errors', 1);
             </form>
         </div>
 
-        <!-- डेटा टेबल -->
+        <!-- data table -->
         <div class="table-responsive">
             <?php foreach ($all_data as $date => $transactions): ?>
                 <div class="card mb-3">
@@ -363,7 +363,7 @@ ini_set('display_errors', 1);
             <?php endforeach; ?>
         </div>
 
-        <!-- पेजिनेशन -->
+        <!-- pagination -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <?php

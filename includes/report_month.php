@@ -5,7 +5,7 @@ require_once 'error_handler.php';
 
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
-// एक्सेल फाइल चेक करें
+// excel file check 
 if (!file_exists('../data/transactions.xlsx')) {
     CustomError::show404();
 }
@@ -14,12 +14,12 @@ try {
     $reader = new Xlsx();
     $spreadsheet = $reader->load('../data/transactions.xlsx');
     
-    // अगर कोई डेटा नहीं है
+    // if are not match 
     if ($spreadsheet->getActiveSheet()->getHighestRow() <= 1) {
         CustomError::show404();
     }
     
-    // बाकी का कोड...
+// blank for now!!
     
 } catch (Exception $e) {
     CustomError::show404();
