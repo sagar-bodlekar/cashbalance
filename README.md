@@ -31,6 +31,6 @@
 
 ## Screenshot
 
-![1st](https://github.com/sagar-bodlekar/cashbalance/blob/master/assets/first page.png)
-![2nd](https://github.com/sagar-bodlekar/cashbalance/blob/master/assets/2nd page.png)
-![3rd](https://github.com/sagar-bodlekar/cashbalance/blob/master/assets/3rd pdf report.png)
+![1st](https://github.com/sagar-bodlekar/cashbalance/blob/master/assets/firstpage.png)
+![2nd](https://github.com/sagar-bodlekar/cashbalance/blob/master/assets/2ndpage.png)
+![3rd](https://github.com/sagar-bodlekar/cashbalance/blob/master/assets/3rdpdfreport.png)
